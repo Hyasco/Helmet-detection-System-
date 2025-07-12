@@ -1,1 +1,45 @@
 
+#define FSR_PIN A0         
+#define RELAY_PIN 4        //  D2
+#define BUZZER_PIN 12       // D6
+
+// --- Seuil de pression à ajuster selon le capteur ---
+const int seuil = 60;     
+bool casqueDetecte = false; 
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(FSR_PIN, INPUT);
+  pinMode(RELAY_PIN, OUTPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+
+  // Initialisation : désactiver relais et buzzer
+  digitalWrite(RELAY_PIN, LOW);
+  digitalWrite(BUZZER_PIN, LOW);
+}
+
+void loop() {
+  int pression = analogRead(FSR_PIN);
+  Serial.print("Pression lue : ");
+  Serial.println(pression);
+
+  if (pression > seuil) {
+    // Si le casque est porté
+    if (!casqueDetecte) {
+      casqueDetecte = true;
+      digitalWrite(RELAY_PIN, HIGH);    
+      digitalWrite(BUZZER_PIN, HIGH);   
+      delay(300);                       
+      digitalWrite(BUZZER_PIN, LOW);    
+    }
+  } else {
+    // Casque non porté
+    casqueDetecte = false;
+    digitalWrite(RELAY_PIN, LOW);       
+    digitalWrite(BUZZER_PIN, LOW);     
+  }
+
+  delay(300); 
+}
+
